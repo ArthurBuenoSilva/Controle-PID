@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} {% endblock %}</title>
+    <script src="{{ url_for('static', filename='js/socket.io.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tailwind.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tailwind.config.js') }}"></script>
+    <link href="{{ url_for('static', filename='css/tailwind.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/flowbite.min.css') }}" rel="stylesheet">
+
+    {% block scripts %}{% endblock %}
+    {% block styles %}{% endblock %}
+</head>
+<body class="h-screen w-screen">
+    {% block content %} {% endblock %}
+
+    <script src="{{ url_for('static', filename='js/flowbite.min.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
