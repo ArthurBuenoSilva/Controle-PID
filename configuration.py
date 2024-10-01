@@ -1,3 +1,4 @@
+import os
 import socket
 from contextlib import closing
 
@@ -12,6 +13,29 @@ def get_available_port():
 
 HOST = "127.0.0.1"
 PORT = get_available_port()
+
+DATASETS_FOLDER = os.path.join("app", "static", "datasets")
+
+if not os.path.exists(DATASETS_FOLDER):
+    os.mkdir(DATASETS_FOLDER)
+
+
+def clear_folder(folder_path: str) -> bool:
+    try:
+        # List all files in folder
+        files = os.listdir(folder_path)
+
+        # Iterate over each file and delete it
+        for file in files:
+            file_path = os.path.join(folder_path, file)
+
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+
+        return True
+    except Exception as e:
+        print(f"Error while clearing folder: {e}")
+        return False
 
 
 class Configuration:
