@@ -7,7 +7,132 @@
 {% endblock %}
 
 {% block content %}
+    <div class="flex m-4 h-full gap-x-2">
+        <div class="flex flex-col gap-y-4 w-4/12 h-full">
+            <!-- Parameters for transfer function -->
+            <form class="flex gap-6 items-center max-w-md">
+                <!-- Method -->
+                <div class="relative basis-1/2">
+                    <input type="text" id="method" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
+                    <label for="method" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">Método</label>
+                </div>
+
+                <!-- K -->
+                <div class="relative">
+                    <input type="text" id="k" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
+                    <label for="k" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">k</label>
+                </div>
+
+                <!-- Tau -->
+                <div class="relative">
+                    <input type="text" id="tau" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
+                    <label for="tau" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">τ</label>
+                </div>
+
+                <!-- Theta -->
+                <div class="relative">
+                    <input type="text" id="theta" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
+                    <label for="theta" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">θ</label>
+                </div>
+            </form>
+
+            <!-- Identification Methods Charts -->
+            <div class="flex flex-col items-start gap-y-2 w-full h-full">
+                <!-- Open loop-->
+                <div class="flex relative w-full h-full">
+                    <canvas id="open-loop" class="h-full w-full bg-gray-800 border border-transparent rounded-xl"></canvas>
+                </div>
+
+                <!-- Chose loop-->
+                <div class="flex relative w-full h-full">
+                    <canvas id="close-loop" class="h-full w-full bg-gray-800 border border-transparent rounded-xl"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col gap-y-4 w-7/12 h-full">
+            <!-- PID Parameters -->
+            <form class="flex justify-between items-center">
+                <div class="flex w-full basis-1/2 gap-4">
+                    <!-- Tune Methods -->
+                    <div class="relative basis-3/5">
+                        <label for="tune-methods" class="sr-only">Métodos de sintonia</label>
+                        <select id="tune-methods" class="block py-2.5 px-0 w-full text-sm text-gray-400 bg-transparent border-0 border-b-2 border-gray-500 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 peer" disabled>
+                            {% for name in context.tune_methods %}
+                                <option value="{{ name }}">{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Overshoot Input -->
+                    <div class="flex items-center hidden">
+                        <input id="with-overshoot" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" disabled>
+                        <label for="with-overshoot" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Overshoot?</label>
+                    </div>
+
+                    <!-- Lambda Input -->
+                    <div class="relative hidden">
+                        <input type="text" id="lambda" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
+                        <label for="lambda" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">λ</label>
+                    </div>
+                </div>
+
+                <!-- Refresh PID Chart -->
+                <button
+                    type="button"
+                    id="reload-tune-button"
+                    class="gap-x-2 text-white hover:bg-green-700 focus:ring-4 md:w-auto focus:outline-none focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 bg-green-600"
+                    onclick="reloadTune()"
+                    disabled
+                >
+                    <img src="{{ url_for('static', filename='img/refresh.svg') }}" class="h-4" alt="Import"/>
+                    Gerar PID
+                </button>
+            </form>
+
+            <!-- PID Chart -->
+            <div class="flex flex-col relative items-start gap-y-2 w-full h-full">
+                <canvas id="pid-tune" class="h-full w-full bg-gray-800 border border-transparent rounded-xl"></canvas>
+            </div>
+        </div>
+        <div class="flex flex-col gap-y-4 w-1/12 h-full">
+            <!-- Parameters -->
+            <form class="flex flex-col justify-between items-center mt-16 gap-y-4">
+                <!-- Kp -->
+                <div class="relative">
+                    <input type="text" id="kp" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
+                    <label for="kp" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">Kp</label>
+                </div>
+
+                <!-- Ti -->
+                <div class="relative">
+                    <input type="text" id="ti" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
+                    <label for="ti" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">Ti</label>
+                </div>
+
+                <!-- Td -->
+                <div class="relative">
+                    <input type="text" id="td" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
+                    <label for="td" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">Td</label>
+                </div>
+
+                <!-- Overshoot -->
+                <div class="relative">
+                    <input type="text" id="overshoot" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
+                    <label for="overshoot" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">Overshoot</label>
+                </div>
+
+                <!-- Rise Time -->
+                <div class="relative">
+                    <input type="text" id="rise-time" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
+                    <label for="rise-time" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">T. de resposta</label>
+                </div>
+            </form>
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block extra_scripts %}
+    <script src="{{ url_for('static', filename='js/pid/pid.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pid/charts.js') }}"></script>
 {% endblock %}
