@@ -54,17 +54,20 @@ function plotOpenLoop(data) {
                 {
                     label: "Power",
                     data: power,
-                    borderWidth: 1
+                    borderWidth: 1,
+                    pointBorderWidth: 1,
                 },
                 {
                     label: "Smith",
                     data: smith.response,
-                    borderWidth: 1
+                    borderWidth: 1,
+                    pointBorderWidth: 1
                 },
                 {
                     label: "Sundaresan",
                     data: sundaresan.response,
-                    borderWidth: 1
+                    borderWidth: 1,
+                    pointBorderWidth: 1
                 },
             ]
         },
@@ -107,17 +110,20 @@ function plotCloseLoop(data) {
                 {
                     label: "Power",
                     data: power,
-                    borderWidth: 1
+                    borderWidth: 1,
+                    pointBorderWidth: 1
                 },
                 {
                     label: "Smith",
                     data: smith.response,
-                    borderWidth: 1
+                    borderWidth: 1,
+                    pointBorderWidth: 1
                 },
                 {
                     label: "Sundaresan",
                     data: sundaresan.response,
-                    borderWidth: 1
+                    borderWidth: 1,
+                    pointBorderWidth: 1
                 },
             ]
         },
@@ -141,6 +147,9 @@ socketio.on("tune", (data) => {
     const method = data.method;
     const time = data.time;
     const response = data.response;
+    const k = data.k;
+    const tau = data.tau;
+    const theta = data.theta;
     const kp = data.kp;
     const ti = data.ti;
     const td = data.td;
@@ -148,7 +157,7 @@ socketio.on("tune", (data) => {
     const rise_time = data.rise_time;
 
     plotTune(method, time, response);
-    fillPIDParams(kp, ti, td, overshoot, rise_time);
+    fillPIDParams(k, tau, theta, kp, ti, td, overshoot, rise_time);
 })
 
 function plotTune(method, time, response) {
@@ -171,7 +180,8 @@ function plotTune(method, time, response) {
                 {
                     label: method,
                     data: response,
-                    borderWidth: 1
+                    borderWidth: 1,
+                    pointBorderWidth: 1
                 },
             ]
         },
@@ -195,26 +205,41 @@ function plotTune(method, time, response) {
 }
 
 function reloadTune() {
+    const method = document.getElementById("method");
     const tune = document.getElementById("tune-methods");
+    const pade = document.getElementById("pade");
     const overshoot = document.getElementById("with-overshoot");
     const lambda = document.getElementById("lambda");
 
-    console.log(lambda.value)
+    const kp_input = document.getElementById("kp");
+    const ti_input = document.getElementById("ti");
+    const td_input = document.getElementById("td");
 
     socketio.emit("reloadTune", {
+        "identification": method.value,
         "method": tune.value,
+        "pade": pade.value,
         "overshoot": overshoot.checked,
-        "lambda_val": lambda.value
+        "lambda_val": lambda.value,
+        "kp": kp_input.value,
+        "ti": ti_input.value,
+        "td": td_input.value
     })
 }
 
-function fillPIDParams(kp, ti, td, overshoot, rise_time) {
+function fillPIDParams(k, tau, theta, kp, ti, td, overshoot, rise_time) {
+    const k_input = document.getElementById("k");
+    const tau_input = document.getElementById("tau");
+    const theta_input = document.getElementById("theta");
     const kp_input = document.getElementById("kp");
     const ti_input = document.getElementById("ti");
     const td_input = document.getElementById("td");
     const overshoot_input = document.getElementById("overshoot");
     const rise_time_input = document.getElementById("rise-time");
 
+    k_input.value = k;
+    tau_input.value = tau;
+    theta_input.value = theta;
     kp_input.value = kp;
     ti_input.value = ti;
     td_input.value = td;

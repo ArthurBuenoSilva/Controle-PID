@@ -25,15 +25,23 @@ def import_datasets():
 
 @socketio.on("plot")
 def plot():
-    controller.identification_method()
-    controller.pid_tune("CHR")
+    controller.identification_method("smith")
+    controller.pid_tune("smith", "CHR")
 
 
 @socketio.on("reloadTune")
 def reload_tune(data: dict):
+    identification = data.get("identification")
     method = data.get("method")
+    pade = data.get("pade", 20)
     overshoot = data.get("overshoot", False)
     lambda_val = data.get("lambda_val", 0)
+
+    try:
+        pade = int(pade)
+    except ValueError:
+        socketio.emit("notify", {"message": "Valor de pade inválido", "category": "error"})
+        return
 
     try:
         lambda_val = float(lambda_val)
@@ -41,4 +49,29 @@ def reload_tune(data: dict):
         socketio.emit("notify", {"message": "Valor de lambda inválido", "category": "error"})
         return
 
-    controller.pid_tune(method, overshoot, lambda_val)
+    if method == "Manual":
+        kp = data.get("kp")
+        ti = data.get("ti")
+        td = data.get("td")
+
+        try:
+            kp = float(kp)
+        except ValueError:
+            socketio.emit("notify", {"message": "Valor de Kp inválido", "category": "error"})
+            return
+
+        try:
+            ti = float(ti)
+        except ValueError:
+            socketio.emit("notify", {"message": "Valor de Ti inválido", "category": "error"})
+            return
+
+        try:
+            td = float(td)
+        except ValueError:
+            socketio.emit("notify", {"message": "Valor de Td inválido", "category": "error"})
+            return
+
+        controller.manual_pid_tune(identification, pade, kp, ti, td)
+    else:
+        controller.pid_tune(identification, method, pade, overshoot, lambda_val)

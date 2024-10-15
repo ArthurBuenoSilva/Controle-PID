@@ -8,13 +8,16 @@
 
 {% block content %}
     <div class="flex m-4 h-full gap-x-2">
-        <div class="flex flex-col gap-y-4 w-4/12 h-full">
+        <div class="flex flex-col gap-y-2.5 w-4/12 h-full">
             <!-- Parameters for transfer function -->
             <form class="flex gap-6 items-center max-w-md">
                 <!-- Method -->
                 <div class="relative basis-1/2">
-                    <input type="text" id="method" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
-                    <label for="method" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">Método</label>
+                    <label for="method" class="sr-only">Método de Identificação</label>
+                    <select id="method" class="block py-2.5 px-0 w-full text-sm text-gray-400 bg-transparent border-0 border-b-2 border-gray-500 appearance-none focus:outline-none focus:ring-0 focus:border-gray-200 peer" disabled>
+                        <option value="smith">Smith</option>
+                        <option value="sundaresan">Sundaresan</option>
+                    </select>
                 </div>
 
                 <!-- K -->
@@ -43,13 +46,13 @@
                     <canvas id="open-loop" class="h-full w-full bg-gray-800 border border-transparent rounded-xl"></canvas>
                 </div>
 
-                <!-- Chose loop-->
+                <!-- Close loop-->
                 <div class="flex relative w-full h-full">
                     <canvas id="close-loop" class="h-full w-full bg-gray-800 border border-transparent rounded-xl"></canvas>
                 </div>
             </div>
         </div>
-        <div class="flex flex-col gap-y-4 w-7/12 h-full">
+        <div class="flex flex-col gap-y-2.5 w-7/12 h-full">
             <!-- PID Parameters -->
             <form class="flex justify-between items-center">
                 <div class="flex w-full basis-1/2 gap-4">
@@ -61,6 +64,12 @@
                                 <option value="{{ name }}">{{ name }}</option>
                             {% endfor %}
                         </select>
+                    </div>
+
+                    <!-- Pade Order -->
+                    <div class="relative">
+                        <input type="text" id="pade" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " value=20 disabled/>
+                        <label for="pade" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">Padé</label>
                     </div>
 
                     <!-- Overshoot Input -->
@@ -94,9 +103,42 @@
                 <canvas id="pid-tune" class="h-full w-full bg-gray-800 border border-transparent rounded-xl"></canvas>
             </div>
         </div>
-        <div class="flex flex-col gap-y-4 w-1/12 h-full">
+        <div class="flex flex-col gap-y-2.5 w-1/12 h-full">
             <!-- Parameters -->
-            <form class="flex flex-col justify-between items-center mt-16 gap-y-4">
+            <form class="flex flex-col justify-between items-center mt-2 gap-y-2.5">
+                <!-- Smith MSE Title -->
+                <h2 class="text-white text-center">Smith MSE</h2>
+
+                <!-- Smith Open Loop MSE -->
+                <div class="relative">
+                    <input type="text" id="smith-ol-mse" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
+                    <label for="smith-ol-mse" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">Malha Aberta</label>
+                </div>
+
+                <!-- Smith Close Loop MSE -->
+                <div class="relative">
+                    <input type="text" id="smith-cl-mse" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
+                    <label for="smith-cl-mse" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">Malha Fechada</label>
+                </div>
+
+                <!-- Sundaresan MSE Title -->
+                <h2 class="text-white text-center">Sundaresan MSE</h2>
+
+                <!-- Sundaresan Open Loop MSE -->
+                <div class="relative">
+                    <input type="text" id="sundaresan-ol-mse" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
+                    <label for="sundaresan-ol-mse" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">Malha Aberta</label>
+                </div>
+
+                <!-- Sundaresan Close Loop MSE -->
+                <div class="relative">
+                    <input type="text" id="sundaresan-cl-mse" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
+                    <label for="sundaresan-cl-mse" class="absolute text-sm text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:start-2 peer-focus:start-0 peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 rtl:peer-focus:translate-x-1/4">Malha Fechada</label>
+                </div>
+
+                <!-- PID Title -->
+                <h2 class="text-white text-center">PID</h2>
+
                 <!-- Kp -->
                 <div class="relative">
                     <input type="text" id="kp" class="block py-2.5 ps-1 pe-0 w-full text-sm bg-transparent border-0 border-b-2 appearance-none text-white border-gray-600 focus:border-blue-500 focus:outline-none focus:ring-0 peer" placeholder=" " disabled/>
