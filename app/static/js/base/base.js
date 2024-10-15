@@ -13,7 +13,12 @@ function import_dataset() {
         method: "POST",
         body: formData,
     })
-        .then(form.reset())
+        .then(() => {
+            form.reset();
+            socketio.emit("plot", (response) => {
+                activeAfterImport();
+            });
+        })
         .catch(error => console.log(error));
 }
 
