@@ -68,6 +68,7 @@ function activeAfterImport() {
     const overshoot = document.getElementById("with-overshoot");
     const lambda = document.getElementById("lambda");
     const reloadButton = document.getElementById("reload-tune-button")
+    const downloadButton = document.getElementById("save-charts")
 
     pade.disabled = false;
     identificationMethod.disabled = false;
@@ -75,4 +76,20 @@ function activeAfterImport() {
     overshoot.disabled = false;
     lambda.disabled = false;
     reloadButton.disabled = false;
+    downloadButton.disabled = false;
+}
+
+function downloadChart(chartId, fileName) {
+    const canvas = document.getElementById(chartId);
+    const dataUrl = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = fileName;
+    link.click();
+}
+
+function saveCharts() {
+    downloadChart("open-loop", "malha_aberta.png");
+    downloadChart("close-loop", "malha_fechada.png");
+    downloadChart("pid-tune", "pid.png");
 }
